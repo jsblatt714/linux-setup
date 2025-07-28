@@ -1,7 +1,21 @@
-- name: Install required Python packages
+- name: Ensure venv parent directory exists
+  file:
+    path: /opt/myenv
+    state: directory
+    mode: '0755'
+
+- name: Create virtual environment
+  command: python3 -m venv /opt/myenv/venv
+  args:
+    creates: /opt/myenv/venv/bin/activate
+
+- name: Upgrade pip in virtualenv
+  command: /opt/myenv/venv/bin/pip install --upgrade pip
+
+- name: Install requirements into virtualenv
   pip:
     requirements: "{{ requirements_path }}"
-    executable: pip3
+    executable: /opt/myenv/venv/bin/pip
 
 - name: Ensure /usr/bin/python symlink exists
   file:
