@@ -10,13 +10,23 @@
     line: 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
     create: yes
 
+- name: Ensure /root/.kube directory exists
+  file:
+    path: /root/.kube
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
 - name: Copy k3s config to root kube config
   copy:
     remote_src: yes
     src: /etc/rancher/k3s/k3s.yaml
     dest: /root/.kube/config
-    create: true
     force: yes
+    owner: root
+    group: root
+    mode: '0600'
 
 - name: Label the K3s node
   shell: |
