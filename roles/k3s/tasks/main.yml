@@ -15,6 +15,7 @@
     remote_src: yes
     src: /etc/rancher/k3s/k3s.yaml
     dest: /root/.kube/config
+    create: true
     force: yes
 
 - name: Label the K3s node
