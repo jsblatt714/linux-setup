@@ -1,0 +1,11 @@
+- name: Install required Python packages
+  pip:
+    requirements: "{{ requirements_path }}"
+    executable: pip3
+
+- name: Ensure /usr/bin/python symlink exists
+  file:
+    src: /usr/bin/python3
+    dest: /usr/bin/python
+    state: link
+  when: ansible_facts['distribution'] == "Ubuntu"

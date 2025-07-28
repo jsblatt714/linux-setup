@@ -1,0 +1,12 @@
+- name: Provision system with required tools
+  hosts: myhosts
+  become: yes
+  vars:
+    requirements_path: /path/to/your/config/requirements.txt
+  roles:
+    - common
+    - docker
+    - k3s
+    - helm
+    - terraform
+    - python_deps

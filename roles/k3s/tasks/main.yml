@@ -1,0 +1,40 @@
+- name: Install K3s using official script
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--docker" sh -
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Set KUBECONFIG environment variable
+  lineinfile:
+    path: /root/.bashrc
+    line: 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
+    create: yes
+
+- name: Copy k3s config to root kube config
+  copy:
+    remote_src: yes
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /root/.kube/config
+    force: yes
+
+- name: Label the K3s node
+  shell: |
+    NODE=$(kubectl get nodes -o custom-columns=NAME:.metadata.name --no-headers | head -n1)
+    kubectl label nodes $NODE env=nifi --overwrite
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+- name: Remove Traefik manifest
+  file:
+    path: /var/lib/rancher/k3s/server/manifests/traefik.yaml
+    state: absent
+
+- name: Uninstall Traefik from Helm
+  shell: |
+    helm uninstall traefik traefik-crd -n kube-system
+  ignore_errors: true
+
+- name: Restart K3s service
+  service:
+    name: k3s
+    state: restarted

@@ -1,0 +1,16 @@
+- name: Add HashiCorp GPG key
+  shell: |
+    curl https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: Add HashiCorp APT repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release | lower }} main"
+    filename: hashicorp
+    state: present
+
+- name: Install Terraform
+  apt:
+    name: terraform
+    state: present
