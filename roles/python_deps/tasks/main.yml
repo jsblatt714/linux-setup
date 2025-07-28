@@ -17,9 +17,15 @@
     requirements: "{{ requirements_path }}"
     executable: /opt/myenv/venv/bin/pip
 
+- name: Add virtualenv activation to .bashrc
+  lineinfile:
+    path: /root/.bashrc
+    line: 'source /opt/myenv/venv/bin/activate'
+    insertafter: EOF
+
 - name: Ensure /usr/bin/python symlink exists
   file:
-    src: /usr/bin/python3
+    src: /opt/myenv/venv/bin/python
     dest: /usr/bin/python
     state: link
   when: ansible_facts['distribution'] == "Ubuntu"
